@@ -1,0 +1,37 @@
+# 使用官方Python镜像（会通过Docker配置的镜像加速器下载）
+FROM python:3.9-slim
+
+# 设置pip使用清华源
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+    pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
+
+# 安装系统依赖
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && apt-get install -y \
+    libgomp1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgl1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 安装PaddleOCR（使用清华源）
+RUN pip install --no-cache-dir \
+    paddlepaddle==2.5.2 \
+    paddleocr==2.7.0.3 \
+    flask==2.3.3 \
+    pillow
+
+WORKDIR /app
+
+# 复制OCR服务脚本
+COPY ocr_server.py .
+
+# 下载模型时使用国内源
+ENV PADDLEOCR_CACHE_DIR=/app/.paddleocr
+
+EXPOSE 8866
+
+CMD ["python", "ocr_server.py"]

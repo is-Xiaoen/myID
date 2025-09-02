@@ -1,0 +1,29 @@
+# 使用官方GoCV镜像，已包含Go 1.22.0和OpenCV 4.9.0
+FROM gocv/opencv:4.9.0
+
+# 设置Go环境变量
+ENV GO111MODULE=on
+ENV CGO_ENABLED=1
+ENV CGO_CXXFLAGS="-std=c++11"
+ENV CGO_CPPFLAGS="-I/usr/local/include/opencv4"
+ENV CGO_LDFLAGS="-L/usr/local/lib -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs"
+
+WORKDIR /app
+
+# 第1步：先把所有文件都复制进来，这样Go才能看到所有代码
+COPY . .
+
+# 第2步：设置国内代理，并运行go mod tidy
+# go mod tidy会自动分析所有代码，找出所有依赖，然后下载它们
+RUN go env -w GOPROXY=https://goproxy.cn,direct && \
+    go mod tidy
+
+# 第3步：现在所有依赖都已齐全，可以安全地编译了
+RUN go build -o idcard-app main.go
+
+# 创建uploads目录
+RUN mkdir -p /app/uploads
+
+EXPOSE 8080
+
+CMD ["./idcard-app"]

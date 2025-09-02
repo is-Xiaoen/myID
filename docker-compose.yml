@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # PaddleOCR服务 - 使用国内基础镜像
+  paddleocr:
+    build:
+      context: .
+      dockerfile: Dockerfile.paddleocr-cn
+    container_name: paddleocr-service
+    ports:
+      - "8866:8866"
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - idcard-net
+    restart: unless-stopped
+
+  # Go应用服务 - 包含GoCV
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app-gocv
+    container_name: idcard-app
+    ports:
+      - "8080:8080"
+    environment:
+      - DOCKER_ENV=true
+      - PADDLE_OCR_URL=http://paddleocr:8866
+      - PORT=8080
+    depends_on:
+      - paddleocr
+    networks:
+      - idcard-net
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads
+
+networks:
+  idcard-net:
+    driver: bridge

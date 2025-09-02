@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(go:*)",
+      "Bash(docker:*)",
+      "Bash(mkdir:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:gocv.io)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
