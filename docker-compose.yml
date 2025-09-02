@@ -3,9 +3,10 @@ version: '3.8'
 services:
   # PaddleOCR服务 - 使用国内基础镜像
   paddleocr:
-    build:
-      context: .
-      dockerfile: Dockerfile.paddleocr-cn
+    image: paddlecloud/paddleocr:2.6-cpu-latest
+    command: sh -c "pip install flask && python /app/ocr_server_simple.py"
+    volumes:
+      - ./ocr_server_simple.py:/app/ocr_server_simple.py
     container_name: paddleocr-service
     ports:
       - "8866:8866"

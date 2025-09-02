@@ -1,0 +1,14 @@
+# 使用PaddleOCR官方镜像
+FROM paddlecloud/paddleocr:2.8.0-cpu
+
+WORKDIR /app
+
+# 创建简单的OCR服务
+RUN pip install flask
+
+# 创建OCR服务脚本
+COPY ocr_server.py .
+
+EXPOSE 8866
+
+CMD ["python", "ocr_server.py"]

@@ -17,12 +17,16 @@ RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debi
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+# 先安装特定版本的numpy以避免版本冲突
+RUN pip install --no-cache-dir numpy==1.23.5
+
 # 安装PaddleOCR（使用清华源）
 RUN pip install --no-cache-dir \
     paddlepaddle==2.5.2 \
     paddleocr==2.7.0.3 \
     flask==2.3.3 \
-    pillow
+    pillow \
+    opencv-python==4.8.1.78
 
 WORKDIR /app
 
